@@ -4,44 +4,52 @@
 # Randomly ask questions, then show answers
 
 import sys, os
+
 from re import sub
 from random import randint
+
 from xlrd import open_workbook
 from Levenshtein import distance
 
-def ListTopics (filename):
-    """Print the list of topics in the file"""
+
+def list_topics(filename):
+    """Print the list of topics in the file
+    """
     
     topics = set()
     book = open_workbook(filename)
     sheet = book.sheet_by_index(0)
-    for rowindex in range(sheet.nrows):
-        rowdata = sheet.row(rowindex)
-        topics.add(rowdata[0].value)
+    for row_index in range(sheet.nrows):
+        row_data = sheet.row(row_index)
+        topics.add(row_data[0].value)
     for entry in sorted(topics):
         print entry
 #        print topics
     return
 
-def ReadQuestions(filename, topic = 'all'):
+
+def read_questions(filename, topic = 'all'):
     """Read the questions using the xlrd processor.
-    Lines are organized into lists of topic, question and answer."""
+    Lines are organized into lists of topic, question and answer.
+    """
     
     book = open_workbook(filename)
     sheet = book.sheet_by_index(0)
     qlist = []
-    for rowindex in range(sheet.nrows):
-        rowdata = sheet.row(rowindex)
-        if topic == 'all' or rowdata[0].value == topic:
-            list.append(qlist, [x.value for x in rowdata])
+    for row_index in range(sheet.nrows):
+        row_data = sheet.row(row_index)
+        if topic == 'all' or row_data[0].value == topic:
+            list.append(qlist, [x.value for x in row_data])
     print 'Found', len(qlist), 'entries in topic', topic
     return qlist
 
-def RateAnswer(given, correct):
+
+def rate_answer(given, correct):
     """Compare the answer with the given, attempting to be slightly smart.
     Remove irrelevant words (and, or); remove punctuation; sort alphabetically,
     then compare using Levenshtein.
-    Return 1 for correct, 0 for close, -1 for mismatch."""
+    Return 1 for correct, 0 for close, -1 for mismatch.
+    """
 
     regex = '[,:;-]+]|, | the | and | or | a | of | per '
     g = sub(regex, '', given).lower()
@@ -73,7 +81,7 @@ def RateAnswer(given, correct):
     return 
 
     
-def DoQuestions(questions):
+def do_questions(questions):
     """Iteratively pose questions and report answers.
     Questions are selected at random from the database.
     Type 'x' to exit."""
@@ -88,7 +96,7 @@ def DoQuestions(questions):
         r = sys.stdin.readline()
         print 'Answer is:', question[2]
         if r.lower() != 'ok\n':
-            grade = RateAnswer(r, question[2])
+            grade = rate_answer(r, question[2])
             if grade == 1:
                 print "Correct!"
                 repeat = False
@@ -111,17 +119,17 @@ def main():
 
     questions = []
     if args[0] == '--list':
-        ListTopics(args[1])
+        list_topics(args[1])
             
     elif args[0] == '--topic':
-        questions = ReadQuestions(args[2], args[1])
+        questions = read_questions(args[2], args[1])
 
     else:
-        questions = ReadQuestions(args[0])
+        questions = read_questions(args[0])
         print len(questions)
 
     if len(questions) > 0:
-        DoQuestions(questions)
+        do_questions(questions)
     else:
         print "No questions found."
 
