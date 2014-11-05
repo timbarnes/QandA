@@ -17,14 +17,14 @@ def list_topics(filename):
     """
     
     topics = set()
-    book = open_workbook(filename)
-    sheet = book.sheet_by_index(0)
-    for row_index in range(sheet.nrows):
-        row_data = sheet.row(row_index)
-        topics.add(row_data[0].value)
-    for entry in sorted(topics):
-        print entry
-#        print topics
+    with open_workbook(filename) as book:
+        sheet = book.sheet_by_index(0)
+        for row_index in range(sheet.nrows):
+            row_data = sheet.row(row_index)
+            topics.add(row_data[0].value)
+        for entry in sorted(topics):
+            print entry
+                #        print topics
     return
 
 
@@ -33,15 +33,15 @@ def read_questions(filename, topic = 'all'):
     Lines are organized into lists of topic, question and answer.
     """
     
-    book = open_workbook(filename)
-    sheet = book.sheet_by_index(0)
-    qlist = []
-    for row_index in range(sheet.nrows):
-        row_data = sheet.row(row_index)
-        if topic == 'all' or row_data[0].value == topic:
-            list.append(qlist, [x.value for x in row_data])
-    print 'Found', len(qlist), 'entries in topic', topic
-    return qlist
+    with open_workbook(filename) as book:
+        sheet = book.sheet_by_index(0)
+        qlist = []
+        for row_index in range(sheet.nrows):
+            row_data = sheet.row(row_index)
+            if topic == 'all' or row_data[0].value == topic:
+                list.append(qlist, [x.value for x in row_data])
+                print 'Found', len(qlist), 'entries in topic', topic
+        return qlist
 
 
 def rate_answer(given, correct):
