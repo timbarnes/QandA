@@ -3,7 +3,7 @@
 # Access a tab-delimited file of topic, question, answer tuples
 # Randomly ask questions, then show answers
 
-import sys, os
+import sys
 
 from re import sub
 from random import randint
@@ -22,10 +22,17 @@ def list_topics(filename):
         for row_index in range(sheet.nrows):
             row_data = sheet.row(row_index)
             topics.add(row_data[0].value)
-        for entry in sorted(topics):
-            print entry
-                #        print topics
+        return sorted(topics)
+
+
+def print_topics(topic_set):
+    """Print each element from the set of topics provided.
+    """
+
+    for entry in sorted(topic_set):
+        print entry
     return
+
 
 
 def read_questions(filename, topic = 'all'):
@@ -119,14 +126,17 @@ def main():
 
     questions = []
     if args[0] == '--list':
-        list_topics(args[1])
+        topics = list_topics(args[1])
+        if topics:
+            print_topics(topics)
+        else:
+            print args[1], ': No topics found.'
             
     elif args[0] == '--topic':
         questions = read_questions(args[2], args[1])
 
     else:
         questions = read_questions(args[0])
-        print len(questions)
 
     if len(questions) > 0:
         do_questions(questions)
